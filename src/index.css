@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-textPrimary font-sans;
+}
+
+.btn {
+  @apply bg-primary text-white font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 hover:bg-blue-700;
+}
+
+input, textarea {
+  @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md p-6 transform hover:translate-y-1 hover:shadow-lg transition duration-300 ease-in-out;
+}
+
+img {
+  @apply rounded-md;
+}
