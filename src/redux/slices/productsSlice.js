@@ -1,4 +1,3 @@
-// src/redux/slices/productsSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const API_URL = 'https://my-json-server.typicode.com/Shr3yasG/RestApi/products';
@@ -7,17 +6,22 @@ const API_URL = 'https://my-json-server.typicode.com/Shr3yasG/RestApi/products';
 export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
   // Check if there are products in local storage
   const localData = JSON.parse(localStorage.getItem('products'));
-  if (localData) {
+  if (localData && Array.isArray(localData)) {
     return localData;
   }
 
-  // Fetch from API if local storage is empty
+  // Fetch from API if local storage is empty or data is not an array
   const response = await fetch(API_URL);
   const data = await response.json();
 
-  // Save the initial data to local storage
-  localStorage.setItem('products', JSON.stringify(data));
-  return data;
+  // Ensure the fetched data is an array before saving
+  if (Array.isArray(data)) {
+    localStorage.setItem('products', JSON.stringify(data));
+    return data;
+  } else {
+    console.error('API did not return an array:', data);
+    return []; // Return an empty array if data is not in the expected format
+  }
 });
 
 export const addProduct = createAsyncThunk('products/addProduct', async (product, { getState }) => {
@@ -31,8 +35,8 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
   // Get current products from the state
   const currentProducts = getState().products.items;
 
-  // Add the new product to the local state and save to local storage
-  const updatedProducts = [...currentProducts, data];
+  // Ensure currentProducts is an array before updating
+  const updatedProducts = Array.isArray(currentProducts) ? [...currentProducts, data] : [data];
   localStorage.setItem('products', JSON.stringify(updatedProducts));
 
   return data;
@@ -70,14 +74,16 @@ export const deleteProduct = createAsyncThunk('products/deleteProduct', async (i
 const productsSlice = createSlice({
   name: 'products',
   initialState: {
-    items: [],
+    items: [], // Ensure initial state is an array
     status: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.items = action.payload;
+        // Ensure the payload is an array
+        state.items = Array.isArray(action.payload) ? action.payload : [];
+        console.log('Products state updated:', state.items);
       })
       .addCase(addProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);

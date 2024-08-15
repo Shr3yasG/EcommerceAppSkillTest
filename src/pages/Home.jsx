@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import ProductList from '../components/ProductList';
